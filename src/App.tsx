@@ -1,16 +1,18 @@
 import { Routes, Route, Outlet, Link } from "react-router-dom";
-import { CheckName } from './pages/CheckName';
-import { Home } from './pages/Home';
+import { CheckName } from "./pages/CheckName";
+import { Home } from "./pages/Home";
+import { Form } from "./pages/Form";
 
 export default function App() {
   return (
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="check-name" element={<CheckName />} />
-          <Route path="*" element={<NoMatch />} />
-        </Route>
-      </Routes>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="check-name" element={<CheckName />} />
+        <Route path="form" element={<Form />} />
+        <Route path="*" element={<NoMatch />} />
+      </Route>
+    </Routes>
   );
 }
 
@@ -25,6 +27,9 @@ function Layout() {
           <li>
             <Link to="/check-name">Check Name</Link>
           </li>
+          <li>
+            <Link to="/form">Form</Link>
+          </li>
         </ul>
       </nav>
       <hr />
@@ -32,9 +37,6 @@ function Layout() {
     </div>
   );
 }
-
-
-
 
 function NoMatch() {
   return (
