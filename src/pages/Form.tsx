@@ -11,8 +11,8 @@ export function Form() {
   >();
   const [name, setName] = useState<string>("");
   const [age, setAge] = useState<number>();
-  const [married, setMarried] = useState();
-  const [dateOfBirth, setDateOfBirth] = useState();
+  const [married, setMarried] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [data, setData] = useState<BaseResponse>();
   const [errMsg, setErrMsg] = useState<string>();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -27,6 +27,9 @@ export function Form() {
         },
         body: JSON.stringify({
           name: name,
+          age: age,
+          married: married,
+          dateOfBirth: dateOfBirth,
         }),
       })
         .then((rawResponse) => {
@@ -47,15 +50,14 @@ export function Form() {
   });
 
   useEffect(() => {
-    if (nameRef.current !== null) {
-      nameRef.current.focus();
-    }
+    nameRef.current?.focus();
   }, []);
 
   useEffect(() => {
     setErrMsg("");
   }, [name, age, married, dateOfBirth]);
 
+  // Error in sending
   if (status === "ERROR_SENDING_DATA") {
     return (
       <div>
@@ -65,6 +67,7 @@ export function Form() {
     );
   }
 
+  // Sending
   if (status === "SEND_DATA" || status === "SENDING_DATA") {
     return (
       <div>
@@ -74,6 +77,7 @@ export function Form() {
     );
   }
 
+  // Data sent
   if (status === "DATA_SENDED") {
     return (
       <div>
@@ -85,7 +89,7 @@ export function Form() {
   }
 
   return (
-    <div>
+    <div className="form">
       <h1>Enter Your Name</h1>
       <form>
         <label htmlFor="name">Name</label>
@@ -93,6 +97,7 @@ export function Form() {
           id="name"
           type="text"
           ref={nameRef}
+          autoComplete="off"
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -110,12 +115,27 @@ export function Form() {
         />
 
         <label htmlFor="married">Married</label>
-        <input id="married" type="checkbox" />
+        <input
+          id="married"
+          type="checkbox"
+          value={married ? "true" : "false"}
+          onChange={(e) => {
+            setMarried(e.target.checked);
+          }}
+        />
 
         <label htmlFor="date-of-birth">Date Of Birth</label>
-        <input id="date-of-birth" type="date" />
+        <input
+          id="date-of-birth"
+          type="date"
+          value={dateOfBirth ? dateOfBirth.toISOString().substr(0, 10) : ""}
+          onChange={(e) => {
+            setDateOfBirth(new Date(e.target.value));
+          }}
+        />
+        <button onClick={() => setStatus("SEND_DATA")}>VALIDA</button>
       </form>
-      <button onClick={() => setStatus("SEND_DATA")}>VALIDA</button>
+      {`${typeof name}${typeof age}${typeof married}${typeof dateOfBirth}`}
     </div>
   );
 }
