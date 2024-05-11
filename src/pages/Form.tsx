@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BaseResponse } from "../interfaces";
 
 export function Form() {
@@ -73,6 +73,7 @@ export function Form() {
     }
   };
 
+  //this must change
   useEffect(() => {
     if (status === "SEND_DATA") {
       resetErrorStates();
@@ -92,31 +93,18 @@ export function Form() {
           if ([200, 201].includes(rawResponse.status)) {
             return rawResponse.json();
           } else {
-            throw new Error();
+            throw new Error("Failed to send data: " + rawResponse.status);
           }
         })
         .then((response: BaseResponse) => {
           handleServerResponse(response);
         })
-        .catch((e) => {
+        .catch((error) => {
+          console.error("Error sending data:", error);
           setStatus("ERROR_SENDING_DATA");
         });
     }
   }, [status, name, age, married, dateOfBirth]);
-
-  const isFormValid = () => {
-    // Implement input validation logic here
-    return true; // For now, assuming the form is always valid
-  };
-
-  // if (status === "ERROR_SENDING_DATA") {
-  //   return (
-  //     <div>
-  //       <h1>Data Sendign Error</h1>
-  //       <button onClick={() => setStatus("INITIAL")}>Try Again</button>
-  //     </div>
-  //   );
-  // }
 
   if (status === "SEND_DATA" || status === "SENDING_DATA") {
     return (
@@ -138,15 +126,18 @@ export function Form() {
   }
 
   return (
-    <div className="form">
+    <section className="form">
       <h1>Enter Your Information</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          isFormValid() && handleFormSubmission();
+          handleFormSubmission();
         }}
       >
-        <label htmlFor="name">Name</label>
+        {/* NAME */}
+        <label htmlFor="name" className="form-label">
+          Name:
+        </label>
         <input
           id="name"
           type="text"
@@ -154,74 +145,91 @@ export function Form() {
           autoComplete="off"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="form-input"
         />
         {nameErrors.map((error, index) => (
-          <p key={index} className="error">
+          <p key={index} className="error-message">
             {error}
           </p>
         ))}
 
-        <label htmlFor="age">Age</label>
+        {/* AGE */}
+        <label htmlFor="age" className="form-label">
+          Age:
+        </label>
         <input
           id="age"
           type="number"
           value={isNaN(age) ? "" : age}
           onChange={(e) => setAge(parseInt(e.target.value))}
+          className="form-input"
         />
         {ageErrors.map((error, index) => (
-          <p key={index} className="error">
+          <p key={index} className="error-message">
             {error}
           </p>
         ))}
 
-        <label htmlFor="date-of-birth">Date Of Birth</label>
+        {/* DATE OF BIRTH */}
+        <label htmlFor="date-of-birth" className="form-label">
+          Date Of Birth:
+        </label>
         <input
           id="date-of-birth"
           type="date"
           value={dateOfBirth ? dateOfBirth.toISOString().substr(0, 10) : ""}
           onChange={(e) => setDateOfBirth(new Date(e.target.value))}
+          className="form-input"
         />
         {dateOfBirthErrors.map((error, index) => (
-          <p key={index} className="error">
+          <p key={index} className="error-message">
             {error}
           </p>
         ))}
 
+        {/* MARRIAGE */}
         <fieldset>
-          <legend>Married</legend>
-          <label htmlFor="married-yes">Yes</label>
-          <input
-            id="married-yes"
-            type="radio"
-            name="married"
-            value="true"
-            checked={married === true}
-            onChange={() => setMarried(true)}
-          />
-          <label htmlFor="married-no">No</label>
-          <input
-            id="married-no"
-            type="radio"
-            name="married"
-            value="false"
-            checked={married === false}
-            onChange={() => setMarried(false)}
-          />
-          {marriedErrors.map((error, index) => (
-            <p key={index} className="error">
-              {error}
-            </p>
-          ))}
+          <legend>Marriage:</legend>
+          <div className="marriage">
+            <div className="married">
+              <label htmlFor="married-yes" className="form-radio-label">
+                Married:
+              </label>
+              <input
+                id="married-yes"
+                type="radio"
+                name="marriage"
+                value="true"
+                checked={married === true}
+                onChange={() => setMarried(true)}
+                className="form-radio-input"
+              />
+            </div>
+            <div className="single">
+              <label htmlFor="married-no" className="form-radio-label">
+                Single:
+              </label>
+              <input
+                id="married-no"
+                type="radio"
+                name="marriage"
+                value="false"
+                checked={married === false}
+                onChange={() => setMarried(false)}
+                className="form-radio-input"
+              />
+            </div>
+          </div>
         </fieldset>
-
-        <button
-          type="submit"
-          // disabled={status === "SENDING_DATA"}
-        >
+        {marriedErrors.map((error, index) => (
+          <p key={index} className="error-message">
+            {error}
+          </p>
+        ))}
+        <button type="submit" className="form-submit-button">
           Submit
-          {/* {status === "SENDING_DATA" ? "Sending..." : "Submit"} */}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
